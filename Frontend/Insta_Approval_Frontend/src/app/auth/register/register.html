@@ -1,0 +1,26 @@
+<div class="register-container">
+  <h2>Register</h2>
+
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <form (ngSubmit)="register()" #regForm="ngForm">
+    <label for="name">Name</label>
+    <input id="name" type="text" [(ngModel)]="name" name="name" required />
+
+    <label for="email">Email</label>
+    <input id="email" type="email" [(ngModel)]="email" name="email" required />
+
+    <label for="password">Password</label>
+    <input id="password" type="password" [(ngModel)]="password" name="password" required />
+
+    <label for="phone">Phone</label>
+    <input id="phone" type="text" [(ngModel)]="phone" name="phone" required />
+
+    <label for="address">Address</label>
+    <input id="address" type="text" [(ngModel)]="address" name="address" required />
+
+    <button type="submit">Register</button>
+  </form>
+
+  <p>Already have an account? <a routerLink="/login">Login</a></p>
+</div>

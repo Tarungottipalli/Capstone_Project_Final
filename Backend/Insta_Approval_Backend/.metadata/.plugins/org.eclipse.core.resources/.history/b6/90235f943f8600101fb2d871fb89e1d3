@@ -1,0 +1,5 @@
+package com.example.insta_approval_backend.service;
+
+public class LoanService {
+
+}

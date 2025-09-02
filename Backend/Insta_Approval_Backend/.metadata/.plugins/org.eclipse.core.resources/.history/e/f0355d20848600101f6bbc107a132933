@@ -1,0 +1,73 @@
+package com.example.insta_approval_backend;
+
+import java.util.Optional;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.insta_approval_backend.model.Admin;
+import com.example.insta_approval_backend.model.User;
+import com.example.insta_approval_backend.repositoriy.AdminRepository;
+import com.example.insta_approval_backend.repositoriy.UserRepository;
+import com.example.insta_approval_backend.util.AdminRole;
+import com.example.insta_approval_backend.util.Role;
+
+@SpringBootApplication
+public class InstaApprovalBackendApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(InstaApprovalBackendApplication.class, args);
+	}
+	
+	
+	// InstaApprovalBackendApplication.java
+	@Bean
+	CommandLineRunner createDefaultAdmin(UserRepository userRepository,
+	                                   AdminRepository adminRepository,
+	                                   PasswordEncoder passwordEncoder) {
+	    return args -> {
+	        // Check if admin user exists
+	        Optional<User> existingAdminUser = userRepository.findByEmail("admin@bank.com");
+	        
+	        if (existingAdminUser.isPresent()) {
+	            // Check if admin record exists
+	            User adminUser = existingAdminUser.get();
+	            Optional<Admin> existingAdmin = adminRepository.findByUser(adminUser);
+	            
+	            if (existingAdmin.isEmpty()) {
+	                // Create missing admin record
+	                Admin admin = Admin.builder()
+	                    .name("Bank Administrator")
+	                    .email("admin@bank.com")
+	                    .role(AdminRole.MANAGER)
+	                    .password(adminUser.getPassword())
+	                    .user(adminUser)
+	                    .build();
+	                adminRepository.save(admin);
+	                System.out.println("Created missing admin record for: admin@bank.com");
+	            }
+	        } else {
+	            // Create both user and admin records
+	            User adminUser = User.builder()
+	                .email("admin@bank.com")
+	                .password(passwordEncoder.encode("admin123"))
+	                .role(Role.ADMIN)
+	                .build();
+	            adminUser = userRepository.save(adminUser);
+
+	            Admin admin = Admin.builder()
+	                .name("Bank Administrator")
+	                .email("admin@bank.com")
+	                .role(AdminRole.MANAGER)
+	                .password(adminUser.getPassword())
+	                .user(adminUser)
+	                .build();
+	            adminRepository.save(admin);
+	            System.out.println("Created admin user: admin@bank.com / admin123");
+	        }
+	    };
+	}
+}

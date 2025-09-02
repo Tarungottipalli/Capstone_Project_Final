@@ -1,0 +1,37 @@
+package com.example.insta_approval_backend.security;
+
+import java.util.Optional;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.stereotype.Service;
+
+import com.example.insta_approval_backend.model.User;
+import com.example.insta_approval_backend.repositoriy.UserRepository;
+
+@Service
+public class CustomUserDetailsService implements UserDetailsService {
+
+	@Autowired
+    private  UserRepository userRepository;
+
+    public CustomUserDetailsService(UserRepository repo) {
+        this.userRepository = repo;
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
+        Optional<User> ou = userRepository.findByEmail(email);
+        if (ou.isEmpty()) throw new UsernameNotFoundException("User not found: " + email);
+
+        User u = ou.get();
+        // roles in Spring Security expect no "ROLE_" prefix here when using .roles(...)
+        return org.springframework.security.core.userdetails.User.builder()
+                .username(u.getEmail())
+                .password(u.getPassword())
+                .roles(u.getRole().name())  // will be CUSTOMER or ADMIN
+                .build();
+    }
+}

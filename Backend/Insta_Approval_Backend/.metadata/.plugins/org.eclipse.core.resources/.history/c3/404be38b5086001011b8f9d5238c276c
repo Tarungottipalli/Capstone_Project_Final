@@ -1,0 +1,10 @@
+package com.example.insta_approval_backend.repositoriy;
+
+import javax.swing.text.Document;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+@Repository
+public interface DocumentRepository extends JpaRepository<Document, Long> {
+}

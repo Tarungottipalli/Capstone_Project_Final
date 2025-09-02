@@ -1,0 +1,110 @@
+package com.example.insta_approval_backend.controller;
+
+import java.util.List;
+import java.util.stream.Collectors;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.insta_approval_backend.DTO.LoanApplicationRequest;
+import com.example.insta_approval_backend.DTO.LoanResponse;
+import com.example.insta_approval_backend.model.LoanApplication;
+import com.example.insta_approval_backend.service.LoanService;
+
+@RestController
+@RequestMapping("/api/v1/customers")
+public class CustomerController {
+
+    private final LoanService loanService;
+
+    public CustomerController(LoanService loanService) {
+        this.loanService = loanService;
+    }
+
+    // Apply for Loan
+    @PostMapping("/{customerId}/loans")
+    @PreAuthorize("hasRole('CUSTOMER')") 
+    public ResponseEntity<LoanResponse> applyLoan(
+            @PathVariable Long customerId,
+            @RequestBody LoanApplicationRequest request) {
+        LoanApplication loan = loanService.applyLoan(customerId, request);
+
+        LoanResponse resp = new LoanResponse();
+        resp.setApplicationId(loan.getApplicationId());
+        resp.setCustomerId(loan.getCustomer().getCustomerId());
+        resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
+        resp.setLoanAmount(loan.getLoanAmount());
+        resp.setApplicationDate(loan.getApplicationDate());
+        resp.setStatus(loan.getStatus());
+        resp.setRemarks(loan.getRemarks());
+
+        return ResponseEntity.ok(resp);
+    }
+
+    // Get all loans for a customer
+    @GetMapping("/{customerId}/loans")
+    public ResponseEntity<List<LoanResponse>> getCustomerLoans(@PathVariable Long customerId) {
+        List<LoanResponse> loans = loanService.getCustomerLoans(customerId).stream().map(loan -> {
+            LoanResponse resp = new LoanResponse();
+            resp.setApplicationId(loan.getApplicationId());
+            resp.setCustomerId(loan.getCustomer().getCustomerId());
+            resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
+            resp.setLoanAmount(loan.getLoanAmount());
+            resp.setApplicationDate(loan.getApplicationDate());
+            resp.setStatus(loan.getStatus());
+            resp.setRemarks(loan.getRemarks());
+            return resp;
+        }).collect(Collectors.toList());
+
+        return ResponseEntity.ok(loans);
+    }
+
+  
+    
+    @GetMapping("/loans/{loanId}")
+    @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
+    public ResponseEntity<LoanResponse> getLoanStatus(@PathVariable Long loanId) {
+        LoanApplication loan = loanService.getLoanStatus(loanId);
+        return ResponseEntity.ok(mapToLoanResponse(loan));
+    }
+
+  
+    @PutMapping("/loans/{loanId}")
+    @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
+    public ResponseEntity<LoanResponse> updateLoan(
+            @PathVariable Long loanId,
+            @RequestBody LoanApplicationRequest request) {
+        
+        LoanApplication loan = loanService.updateLoan(loanId, request);
+        return ResponseEntity.ok(mapToLoanResponse(loan));
+    }
+
+
+    @DeleteMapping("/loans/{loanId}")
+    @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
+    public ResponseEntity<String> cancelLoan(@PathVariable Long loanId) {
+        loanService.cancelLoan(loanId);
+        return ResponseEntity.ok("Loan application cancelled successfully");
+    }
+
+   
+    private LoanResponse mapToLoanResponse(LoanApplication loan) {
+        LoanResponse resp = new LoanResponse();
+        resp.setApplicationId(loan.getApplicationId());
+        resp.setCustomerId(loan.getCustomer().getCustomerId());
+        resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
+        resp.setLoanAmount(loan.getLoanAmount());
+        resp.setApplicationDate(loan.getApplicationDate());
+        resp.setStatus(loan.getStatus());
+        resp.setRemarks(loan.getRemarks());
+        return resp;
+    }
+}

@@ -1,0 +1,49 @@
+<div class="dashboard-container">
+  <h2>Customer Dashboard</h2>
+  <button (click)="logout()">Logout</button>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <!-- Customer Profile -->
+  <div *ngIf="customer">
+    <h3>Welcome, {{ customer.name }}</h3>
+    <p><strong>Email:</strong> {{ customer.email }}</p>
+    <p><strong>Phone:</strong> {{ customer.phone }}</p>
+    <p><strong>Address:</strong> {{ customer.address }}</p>
+    <p><strong>CIBIL Score:</strong> {{ customer.cibilScore }}</p>
+    <p><strong>Registered On:</strong> {{ customer.registrationDate | date : 'medium' }}</p>
+
+    <!-- Loan Actions -->
+    <div class="loan-actions">
+      <a routerLink="/apply-loan">Apply for Loan</a>
+    </div>
+
+    <!-- Loan List -->
+    <h3>Your Loans</h3>
+    <table *ngIf="loans.length > 0" class="loan-table">
+      <tr>
+        <th>ID</th>
+        <th>Type</th>
+        <th>Amount</th>
+        <th>Application Date</th>
+        <th>Status</th>
+        <th>Remarks</th>
+        <th>Actions</th>
+      </tr>
+      <tr *ngFor="let loan of loans">
+        <td>{{ loan.applicationId }}</td>
+        <td>{{ loan.loanTypeId }}</td>
+        <td>{{ loan.loanAmount }}</td>
+        <td>{{ loan.applicationDate | date : 'short' }}</td>
+        <td>{{ loan.status }}</td>
+        <td>{{ loan.remarks }}</td>
+        <td>
+          <a [routerLink]="['/view-loan', loan.applicationId]">View</a> |
+          <a [routerLink]="['/edit-loan', loan.applicationId]">Edit</a> |
+          <button (click)="cancelLoan(loan.applicationId)">Cancel</button>
+        </td>
+      </tr>
+    </table>
+    <p *ngIf="loans.length === 0">No loan applications found.</p>
+  </div>
+</div>

@@ -1,0 +1,11 @@
+package com.example.insta_approval_backend.DTO;
+
+import lombok.Data;
+
+@Data
+public class DocumentUploadResponse {
+    private Long documentId;
+    private String fileName;
+    private String fileType;
+    private Long loanApplicationId;
+}

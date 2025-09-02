@@ -1,0 +1,114 @@
+package com.example.insta_approval_backend.service;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.insta_approval_backend.DTO.LoanApplicationRequest;
+import com.example.insta_approval_backend.model.Customer;
+import com.example.insta_approval_backend.model.LoanApplication;
+import com.example.insta_approval_backend.model.LoanType;
+import com.example.insta_approval_backend.repositoriy.CustomerRepository;
+import com.example.insta_approval_backend.repositoriy.LoanApplicationRepository;
+import com.example.insta_approval_backend.repositoriy.LoanTypeRepository;
+import com.example.insta_approval_backend.util.LoanStatus;
+
+@Service
+public class LoanService {
+
+    private final LoanApplicationRepository loanRepo;
+    private final LoanTypeRepository loanTypeRepo;
+    private final CustomerRepository customerRepo;
+
+    public LoanService(LoanApplicationRepository loanRepo,
+                       LoanTypeRepository loanTypeRepo,
+                       CustomerRepository customerRepo) {
+        this.loanRepo = loanRepo;
+        this.loanTypeRepo = loanTypeRepo;
+        this.customerRepo = customerRepo;
+    }
+
+    // Customer applies for loan
+    public LoanApplication applyLoan(Long customerId, LoanApplicationRequest req) {
+        Customer customer = customerRepo.findById(customerId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Customer not found"));
+
+        LoanType loanType = loanTypeRepo.findById(req.getLoanTypeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan type not found"));
+
+        LoanApplication loan = LoanApplication.builder()
+                .customer(customer)
+                .loanType(loanType)
+                .loanAmount(req.getLoanAmount())
+                .status(LoanStatus.PENDING)
+                .applicationDate(LocalDateTime.now())
+                .remarks(req.getRemarks())
+                .build();
+
+        return loanRepo.save(loan);
+    }
+
+    // Customer views their loans
+    public List<LoanApplication> getCustomerLoans(Long customerId) {
+        return loanRepo.findByCustomerCustomerId(customerId);
+    }
+
+   
+    public LoanApplication getLoanStatus(Long loanId) {
+        return loanRepo.findById(loanId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan not found"));
+    }
+    
+  
+
+    public LoanApplication updateLoan(Long loanId, LoanApplicationRequest request) {
+        LoanApplication loan = loanRepo.findById(loanId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan not found"));
+
+        
+        if (loan.getStatus() != LoanStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Cannot update loan that is already " + loan.getStatus());
+        }
+
+        LoanType loanType = loanTypeRepo.findById(request.getLoanTypeId())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan type not found"));
+
+        loan.setLoanAmount(request.getLoanAmount());
+        loan.setLoanType(loanType);
+        loan.setRemarks(request.getRemarks());
+
+        return loanRepo.save(loan);
+    }
+
+    
+    public void cancelLoan(Long loanId) {
+        LoanApplication loan = loanRepo.findById(loanId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan not found"));
+
+        // Check if loan is still pending (can only cancel pending loans)
+        if (loan.getStatus() != LoanStatus.PENDING) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, 
+                "Cannot cancel loan that is already " + loan.getStatus());
+        }
+
+        loanRepo.delete(loan);
+    }
+
+   
+    public boolean isUsersLoan(Long loanId) {
+        // Get current user ID from security context
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String username = authentication.getName();
+        
+        Optional<LoanApplication> loan = loanRepo.findById(loanId);
+        return loan.isPresent() && 
+               loan.get().getCustomer().getUser().getEmail().equals(username);
+    }
+}

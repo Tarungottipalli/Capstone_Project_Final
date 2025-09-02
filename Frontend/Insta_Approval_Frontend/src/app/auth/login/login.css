@@ -1,0 +1,118 @@
+/* Container styling */
+.login-container {
+  max-width: 400px;
+  margin: 90px auto;
+  padding: 40px 35px;
+  background: rgba(20, 20, 30, 0.9);
+  border-radius: 18px;
+  backdrop-filter: blur(15px);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+  font-family: "Poppins", sans-serif;
+  text-align: center;
+  color: #f1f1f1;
+  animation: fadeUp 0.8s ease-in-out;
+}
+
+/* Heading */
+.login-container h2 {
+  margin-bottom: 25px;
+  font-size: 28px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  letter-spacing: 1px;
+}
+
+/* Labels */
+.login-container label {
+  display: block;
+  text-align: left;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #bbb;
+}
+
+/* Inputs */
+.login-container input {
+  width: 100%;
+  padding: 14px 16px;
+  margin-bottom: 20px;
+  border: none;
+  border-radius: 12px;
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+  font-size: 15px;
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.login-container input:focus {
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 8px #00f2fe;
+  border: 1px solid #00f2fe;
+}
+
+/* Button */
+.login-container button {
+  width: 100%;
+  padding: 14px;
+  background: linear-gradient(135deg, #00f2fe, #4facfe);
+  border: none;
+  border-radius: 12px;
+  color: #111;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+}
+
+.login-container button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(0, 242, 254, 0.4);
+}
+
+/* Error message */
+.login-container .error {
+  color: #ff6b6b;
+  background: rgba(255, 107, 107, 0.15);
+  border: 1px solid rgba(255, 107, 107, 0.3);
+  padding: 12px;
+  border-radius: 10px;
+  margin-bottom: 18px;
+  font-size: 14px;
+  text-align: center;
+  animation: shake 0.3s ease;
+}
+
+/* Navigation link */
+.login-container p {
+  margin-top: 20px;
+  font-size: 14px;
+  color: #aaa;
+}
+
+.login-container a {
+  color: #00f2fe;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.login-container a:hover {
+  text-decoration: underline;
+}
+
+/* Animations */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shake {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  50% { transform: translateX(4px); }
+  75% { transform: translateX(-4px); }
+  100% { transform: translateX(0); }
+}

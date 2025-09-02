@@ -1,0 +1,50 @@
+<div class="admin-container">
+  <div class="header">
+    <h2>Admin Dashboard</h2>
+    <button (click)="logout()">Logout</button>
+  </div>
+
+  <div *ngIf="error" class="error">{{ error }}</div>
+
+  <div class="table-section">
+    <h3>Pending Loan Applications</h3>
+
+    <table *ngIf="loans.length > 0">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Customer</th>
+          <th>Loan Type</th>
+          <th>Amount</th>
+          <th>Application Date</th>
+          <th>Status</th>
+          <th>Remarks</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let loan of loans">
+          <td>{{ loan.applicationId }}</td>
+          <td>
+            {{ loan.customer.name }} <span class="muted">(ID: {{ loan.customer.customerId }})</span>
+          </td>
+          <td>
+            {{ loan.loanType.name }} <span class="muted">(ID: {{ loan.loanType.loanTypeId }})</span>
+          </td>
+          <td>₹{{ loan.loanAmount }}</td>
+          <td>{{ loan.applicationDate | date : 'short' }}</td>
+          <td>
+            <span class="status">{{ loan.status }}</span>
+          </td>
+          <td>{{ loan.remarks }}</td>
+          <td class="actions">
+            <button class="approve" (click)="approveLoan(loan.applicationId)">Approve</button>
+            <button class="reject" (click)="rejectLoan(loan.applicationId)">Reject</button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p *ngIf="loans.length === 0" class="empty-state">No pending loan applications.</p>
+  </div>
+</div>

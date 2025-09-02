@@ -1,0 +1,5 @@
+package com.example.insta_approval_backend.model;
+
+public class Document {
+
+}

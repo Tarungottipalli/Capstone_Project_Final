@@ -1,0 +1,69 @@
+package com.example.insta_approval_backend.security;
+
+import java.awt.RenderingHints.Key;
+import java.sql.Date;
+import java.util.HashMap;
+import java.util.Map;
+
+import org.springframework.stereotype.Component;
+
+import lombok.Value;
+
+@Component
+public class JwtUtil {
+
+    @Value("${jwt.secret}")
+    private String jwtSecret;
+
+    @Value("${jwt.expiration-ms}")
+    private long jwtExpirationMs;
+
+    private Key getSigningKey() {
+        return Keys.hmacShaKeyFor(jwtSecret.getBytes());
+    }
+
+    // generate token with role and optional adminRole
+    public String generateToken(String email, String role, String adminRole) {
+        Map<String, Object> claims = new HashMap<>();
+        claims.put("role", role);
+        if (adminRole != null) claims.put("adminRole", adminRole);
+
+        return Jwts.builder()
+                .setSubject(email)
+                .addClaims(claims)
+                .setIssuedAt(new Date())
+                .setExpiration(new Date(System.currentTimeMillis() + jwtExpirationMs))
+                .signWith(getSigningKey(), SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(String email, String role) {
+        return generateToken(email, role, null);
+    }
+
+    public boolean validateToken(String token) {
+        try {
+            Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
+            return true;
+        } catch (JwtException ex) {
+            return false;
+        }
+    }
+
+    public String getEmailFromToken(String token) {
+        return Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody().getSubject();
+    }
+
+    public String getRoleFromToken(String token) {
+        Object r = Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody().get("role");
+        return r != null ? r.toString() : null;
+    }
+
+    public String getAdminRoleFromToken(String token) {
+        Object r = Jwts.parserBuilder().setSigningKey(getSigningKey()).build()
+                .parseClaimsJws(token).getBody().get("adminRole");
+        return r != null ? r.toString() : null;
+    }
+}

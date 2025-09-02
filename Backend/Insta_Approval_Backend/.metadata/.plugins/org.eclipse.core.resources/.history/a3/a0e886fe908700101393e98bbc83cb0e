@@ -1,0 +1,12 @@
+package com.example.insta_approval_backend.DTO;
+
+import java.math.BigDecimal;
+
+import lombok.Data;
+
+@Data
+public class LoanApplicationRequest {
+    private Long loanTypeId;
+    private BigDecimal loanAmount;
+    private String remarks;
+}

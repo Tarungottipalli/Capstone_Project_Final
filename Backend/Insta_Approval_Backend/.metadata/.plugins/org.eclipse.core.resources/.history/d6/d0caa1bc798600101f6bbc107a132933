@@ -1,0 +1,13 @@
+package com.example.insta_approval_backend;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class InstaApprovalBackendApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(InstaApprovalBackendApplication.class, args);
+	}
+
+}

@@ -1,0 +1,43 @@
+package com.example.insta_approval_backend.controller;
+
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.example.insta_approval_backend.DTO.ApproveRejectRequest;
+import com.example.insta_approval_backend.DTO.LoanResponse;
+import com.example.insta_approval_backend.model.LoanApplication;
+import com.example.insta_approval_backend.service.AdminService;
+
+@RestController
+@RequestMapping("/api/v1/admin")
+public class AdminController {
+
+    private final AdminService adminService;
+    public AdminController(AdminService adminService) {
+        this.adminService = adminService;
+    }
+
+    // Approve/Reject Loan
+    @PostMapping("/{adminId}/review")
+    public ResponseEntity<LoanResponse> reviewLoan(
+            @PathVariable Long adminId,
+            @RequestBody ApproveRejectRequest request) {
+
+        LoanApplication loan = adminService.reviewLoan(adminId, request);
+
+        LoanResponse resp = new LoanResponse();
+        resp.setApplicationId(loan.getApplicationId());
+        resp.setCustomerId(loan.getCustomer().getCustomerId());
+        resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
+        resp.setLoanAmount(loan.getLoanAmount());
+        resp.setApplicationDate(loan.getApplicationDate());
+        resp.setStatus(loan.getStatus());
+        resp.setRemarks(loan.getRemarks());
+
+        return ResponseEntity.ok(resp);
+    }
+}

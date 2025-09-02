@@ -1,0 +1,122 @@
+package com.example.insta_approval_backend.service;
+
+
+import java.util.concurrent.ThreadLocalRandom;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.insta_approval_backend.DTO.CustomerResponse;
+import com.example.insta_approval_backend.DTO.LoginRequest;
+import com.example.insta_approval_backend.DTO.LoginResponse;
+import com.example.insta_approval_backend.DTO.RegisterCustomerRequest;
+import com.example.insta_approval_backend.model.Admin;
+import com.example.insta_approval_backend.model.Customer;
+import com.example.insta_approval_backend.model.User;
+import com.example.insta_approval_backend.repositoriy.AdminRepository;
+import com.example.insta_approval_backend.repositoriy.CustomerRepository;
+import com.example.insta_approval_backend.repositoriy.UserRepository;
+import com.example.insta_approval_backend.security.JwtUtil;
+import com.example.insta_approval_backend.util.Role;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+
+    public CustomerResponse registerCustomer(RegisterCustomerRequest req) {
+    	int randomCibil = ThreadLocalRandom.current().nextInt(650, 851);
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        }
+
+        // Create User with hashed password
+        User user = User.builder()
+                .email(req.getEmail())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .role(Role.CUSTOMER)
+                .build();
+        user = userRepository.save(user);
+
+        // Create Customer (DO NOT store password here - it's already in User)
+        Customer customer = Customer.builder()
+                .name(req.getName())
+                .phone(req.getPhone())
+                .address(req.getAddress())
+                .email(req.getEmail())
+                .cibilScore(randomCibil)
+                .user(user)
+                .build();
+        customer = customerRepository.save(customer);
+
+        CustomerResponse resp = new CustomerResponse();
+        resp.setCustomerId(customer.getCustomerId());
+        resp.setName(customer.getName());
+        resp.setEmail(user.getEmail());
+        resp.setPhone(customer.getPhone());
+        resp.setAddress(customer.getAddress());
+        resp.setCibilScore(customer.getCibilScore());
+        resp.setRegistrationDate(customer.getRegistrationDate());
+        return resp;
+    }
+
+    public LoginResponse login(LoginRequest req) {
+        Long customerId = null;
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+            );
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        User user = userRepository.findByEmail(req.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        String adminRole = null;
+        if (user.getRole() == Role.ADMIN) {
+            Admin admin = adminRepository.findByUser(user)
+                    .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, 
+                        "Admin record not found for user: " + user.getEmail()
+                    ));
+            
+            if (admin != null && admin.getRole() != null) {
+                adminRole = admin.getRole().name();
+            }
+        }
+
+        // ✅ If role is CUSTOMER, fetch the Customer entity and set customerId
+        if (user.getRole() == Role.CUSTOMER) {
+            Customer customer = customerRepository.findByUser(user)
+                    .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.INTERNAL_SERVER_ERROR, 
+                        "Customer record not found for user: " + user.getEmail()
+                    ));
+            customerId = customer.getCustomerId();
+        }
+
+        // Include user ID in JWT
+        String token = jwtUtil.generateToken(
+            user.getEmail(), 
+            user.getRole().name(), 
+            adminRole, 
+            user.getUserId()
+        );
+
+        // ✅ Now return LoginResponse with correct customerId for customers, null for admins
+        return new LoginResponse(token, user.getRole().name(), adminRole, customerId);
+    }
+}

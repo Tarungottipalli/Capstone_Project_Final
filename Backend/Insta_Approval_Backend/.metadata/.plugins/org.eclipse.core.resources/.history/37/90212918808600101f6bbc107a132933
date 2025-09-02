@@ -1,0 +1,46 @@
+package com.example.insta_approval_backend;
+
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.password.PasswordEncoder;
+
+import com.example.insta_approval_backend.model.Admin;
+import com.example.insta_approval_backend.model.User;
+import com.example.insta_approval_backend.repositoriy.AdminRepository;
+import com.example.insta_approval_backend.repositoriy.UserRepository;
+import com.example.insta_approval_backend.util.AdminRole;
+import com.example.insta_approval_backend.util.Role;
+
+@SpringBootApplication
+public class InstaApprovalBackendApplication {
+
+	public static void main(String[] args) {
+		SpringApplication.run(InstaApprovalBackendApplication.class, args);
+	}
+	
+	
+	@Bean
+	CommandLineRunner initAdmin(UserRepository userRepo, AdminRepository adminRepo, 
+	                           PasswordEncoder encoder) {
+	    return args -> {
+	        if (!userRepo.existsByEmail("admin@bank.com")) {
+	            User adminUser = userRepo.save(User.builder()
+	                .email("admin@bank.com")
+	                .password(encoder.encode("admin123"))
+	                .role(Role.ADMIN)
+	                .build());
+	                
+	            adminRepo.save(Admin.builder()
+	                .name("Bank Admin")
+	                .email("admin@bank.com")
+	                .role(AdminRole.MANAGER)
+	                .user(adminUser)
+	                .password(adminUser.getPassword()) 
+	                .build());
+	        }
+	    };
+	}
+
+}

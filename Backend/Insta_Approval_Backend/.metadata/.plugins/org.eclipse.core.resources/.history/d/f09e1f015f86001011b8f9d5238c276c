@@ -1,0 +1,95 @@
+package com.example.insta_approval_backend.service;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.insta_approval_backend.DTO.CustomerResponse;
+import com.example.insta_approval_backend.DTO.LoginRequest;
+import com.example.insta_approval_backend.DTO.LoginResponse;
+import com.example.insta_approval_backend.DTO.RegisterCustomerRequest;
+import com.example.insta_approval_backend.model.Admin;
+import com.example.insta_approval_backend.model.Customer;
+import com.example.insta_approval_backend.model.User;
+import com.example.insta_approval_backend.repositoriy.AdminRepository;
+import com.example.insta_approval_backend.repositoriy.CustomerRepository;
+import com.example.insta_approval_backend.repositoriy.UserRepository;
+import com.example.insta_approval_backend.security.JwtUtil;
+import com.example.insta_approval_backend.util.Role;
+
+import lombok.RequiredArgsConstructor;
+
+@Service
+@RequiredArgsConstructor
+public class AuthService {
+
+    private final UserRepository userRepository;
+    private final CustomerRepository customerRepository;
+    private final AdminRepository adminRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final AuthenticationManager authenticationManager;
+    private final JwtUtil jwtUtil;
+
+
+    public CustomerResponse registerCustomer(RegisterCustomerRequest req) {
+        if (userRepository.existsByEmail(req.getEmail())) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST, "Email already registered");
+        }
+
+        User user = User.builder()
+                .email(req.getEmail())
+                .password(passwordEncoder.encode(req.getPassword()))
+                .role(Role.CUSTOMER)
+                .build();
+        userRepository.save(user);
+
+        Customer customer = Customer.builder()
+                .name(req.getName())
+                .phone(req.getPhone())
+                .address(req.getAddress())
+                .email(req.getEmail())
+                //.password(req.getPassword())
+                .cibilScore(req.getCibilScore())
+                .user(user)
+                .build();
+        customerRepository.save(customer);
+
+        CustomerResponse resp = new CustomerResponse();
+        resp.setCustomerId(customer.getCustomerId());
+        resp.setName(customer.getName());
+        resp.setEmail(user.getEmail());
+        resp.setPhone(customer.getPhone());
+        resp.setAddress(customer.getAddress());
+        resp.setCibilScore(customer.getCibilScore());
+        resp.setRegistrationDate(customer.getRegistrationDate());
+        return resp;
+    }
+
+    // Login for both customer and admin
+    public LoginResponse login(LoginRequest req) {
+        try {
+            authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(req.getEmail(), req.getPassword())
+            );
+        } catch (Exception e) {
+            throw new ResponseStatusException(HttpStatus.UNAUTHORIZED, "Invalid credentials");
+        }
+
+        User user = userRepository.findByEmail(req.getEmail())
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.UNAUTHORIZED, "User not found"));
+
+        String adminRole = null;
+        if (user.getRole() == Role.ADMIN) {
+            Admin admin = adminRepository.findByUser(user).orElse(null);
+            if (admin != null && admin.getRole() != null) {
+                adminRole = admin.getRole().name();
+            }
+        }
+
+        String token = jwtUtil.generateToken(user.getEmail(), user.getRole().name(), adminRole);
+        return new LoginResponse(token, user.getRole().name(), adminRole);
+    }
+}

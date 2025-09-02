@@ -1,0 +1,17 @@
+<div class="loan-form">
+  <h2>Apply Loan</h2>
+  <p *ngIf="error" class="error">{{ error }}</p>
+
+  <form (ngSubmit)="applyLoan()">
+    <label>Loan Amount</label>
+    <input type="number" [(ngModel)]="loanAmount" name="loanAmount" required />
+
+    <label>Loan Type ID</label>
+    <input type="number" [(ngModel)]="loanTypeId" name="loanTypeId" required />
+
+    <label>Remarks</label>
+    <textarea [(ngModel)]="remarks" name="remarks" rows="3"></textarea>
+
+    <button type="submit">Apply</button>
+  </form>
+</div>

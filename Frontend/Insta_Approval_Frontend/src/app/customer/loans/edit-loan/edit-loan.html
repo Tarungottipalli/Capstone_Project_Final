@@ -1,0 +1,35 @@
+<div *ngIf="loanRequest" class="edit-loan">
+  <h2>Edit Loan</h2>
+
+  <form (ngSubmit)="updateLoan()" #editForm="ngForm">
+    <label for="loanType">Loan Type ID</label>
+    <input
+      id="loanType"
+      type="text"
+      [(ngModel)]="loanRequest.loanTypeId"
+      name="loanTypeId"
+      readonly
+    />
+
+    <label for="amount">Loan Amount</label>
+    <input
+      id="amount"
+      type="number"
+      [(ngModel)]="loanRequest.loanAmount"
+      name="loanAmount"
+      required
+    />
+
+    <label for="remarks">Remarks</label>
+    <textarea
+      id="remarks"
+      [(ngModel)]="loanRequest.remarks"
+      name="remarks"
+    ></textarea>
+
+    <button type="submit">Update</button>
+    <button type="button" (click)="backToDashboard()">Cancel</button>
+  </form>
+</div>
+
+<p *ngIf="error" class="error">{{ error }}</p>

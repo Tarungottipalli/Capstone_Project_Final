@@ -1,0 +1,100 @@
+package com.example.insta_approval_backend.service;
+
+import java.io.IOException;
+import java.time.LocalDateTime;
+import java.util.List;
+
+import org.springframework.http.HttpStatus;
+import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.server.ResponseStatusException;
+
+import com.example.insta_approval_backend.DTO.LoanApplicationRequest;
+import com.example.insta_approval_backend.model.Document;
+import com.example.insta_approval_backend.model.LoanApplication;
+import com.example.insta_approval_backend.model.LoanType;
+import com.example.insta_approval_backend.repositoriy.DocumentRepository;
+import com.example.insta_approval_backend.repositoriy.LoanApplicationRepository;
+import com.example.insta_approval_backend.repositoriy.LoanTypeRepository;
+
+@Service
+public class DocumentService {
+
+    private final DocumentRepository documentRepo;
+    private final LoanApplicationRepository loanRepo;
+    private final LoanTypeRepository loanTypeRepo;
+
+    public DocumentService(DocumentRepository documentRepo, LoanApplicationRepository loanRepo,LoanTypeRepository loanTypeRepo) {
+        this.documentRepo = documentRepo;
+        this.loanRepo = loanRepo;
+        this.loanTypeRepo = loanTypeRepo;
+    }
+    
+    public Document getDocument(Long docId) {
+        return documentRepo.findById(docId)
+                .orElseThrow(() -> new ResponseStatusException(
+                        HttpStatus.NOT_FOUND, "Document not found"
+                ));
+    }
+
+    // Upload file into DB
+    public Document uploadDocument(Long loanId, MultipartFile file,String documentType) {
+        LoanApplication loan = loanRepo.findById(loanId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Loan not found"));
+
+        try {
+            Document doc = Document.builder()
+                    .loanApplication(loan)
+                    .fileName(file.getOriginalFilename())
+                    .fileType(file.getContentType())
+                    .documentType(documentType)
+                    .fileData(file.getBytes())   
+                    .uploadDate(LocalDateTime.now())
+                    .build();
+
+            return documentRepo.save(doc);
+
+        } catch (IOException e) {
+            throw new ResponseStatusException(HttpStatus.INTERNAL_SERVER_ERROR, "File upload failed");
+        }
+    }
+
+    // Download file from DB
+    public byte[] downloadDocument(Long docId) {
+        Document doc = documentRepo.findById(docId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found"));
+        return doc.getFileData();
+    }
+
+    public void deleteDocument(Long docId) {
+        Document doc = documentRepo.findById(docId)
+                .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Document not found"));
+        documentRepo.delete(doc);
+    }
+    
+    public LoanApplication updateLoan(Long loanId, LoanApplicationRequest request) {
+        LoanApplication loan = loanRepo.findById(loanId)
+            .orElseThrow(() -> new RuntimeException("Loan not found with id " + loanId));
+
+        // Update only editable fields
+        loan.setLoanAmount(request.getLoanAmount());
+        loan.setRemarks(request.getRemarks());
+
+        // Optionally allow changing loanType
+        if (request.getLoanTypeId() != null) {
+            LoanType loanType = loanTypeRepo.findById(request.getLoanTypeId())
+                .orElseThrow(() -> new RuntimeException("Invalid loan type"));
+            loan.setLoanType(loanType);
+        }
+
+        return loanRepo.save(loan);
+    }
+    
+    public List<Document> getDocumentsByLoan(Long loanId) {
+        return documentRepo.findByLoanApplication_ApplicationId(loanId);
+    }
+    
+    
+
+
+}

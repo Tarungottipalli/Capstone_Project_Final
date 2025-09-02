@@ -1,0 +1,145 @@
+/* Loan Details Container */
+.loan-details {
+  width: 600px;
+  margin: 40px auto;
+  padding: 25px;
+  border: 1px solid #ddd;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+  font-family: Arial, sans-serif;
+}
+
+.loan-details h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.loan-details p {
+  font-size: 15px;
+  margin: 8px 0;
+  color: #555;
+}
+
+.loan-details strong {
+  color: #222;
+}
+
+/* Actions Section */
+.actions {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.actions a,
+.actions button {
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 16px;
+  margin: 0 5px;
+  cursor: pointer;
+  text-decoration: none;
+  font-size: 14px;
+  transition: background 0.3s ease;
+}
+
+.actions a:hover,
+.actions button:hover {
+  background: #0056b3;
+}
+
+/* Documents Section */
+.loan-details h3 {
+  margin-top: 25px;
+  color: #444;
+  border-bottom: 2px solid #ddd;
+  padding-bottom: 6px;
+}
+
+.doc-upload {
+  margin: 15px 0;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.doc-upload input[type="file"] {
+  flex: 1;
+}
+
+.doc-upload input[type="text"] {
+  flex: 1;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.doc-upload button {
+  padding: 8px 12px;
+  background: #28a745;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.doc-upload button:hover {
+  background: #218838;
+}
+
+/* Document List */
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  margin-bottom: 6px;
+  border: 1px solid #eee;
+  border-radius: 6px;
+  background: #f9f9f9;
+}
+
+ul li button {
+  margin-left: 10px;
+  padding: 6px 10px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+}
+
+ul li button:first-of-type {
+  background: #17a2b8; /* Download */
+  color: white;
+}
+
+ul li button:first-of-type:hover {
+  background: #117a8b;
+}
+
+ul li button:last-of-type {
+  background: #dc3545; /* Delete */
+  color: white;
+}
+
+ul li button:last-of-type:hover {
+  background: #a71d2a;
+}
+
+/* Error Message */
+.error {
+  color: red;
+  text-align: center;
+  margin-top: 15px;
+  font-size: 14px;
+}

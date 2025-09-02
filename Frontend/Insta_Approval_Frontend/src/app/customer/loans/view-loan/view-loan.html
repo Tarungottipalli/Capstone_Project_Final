@@ -1,0 +1,41 @@
+<div *ngIf="loan">
+  <h2>Loan Details</h2>
+  <p><strong>ID:</strong> {{ loan.applicationId }}</p>
+  <p><strong>Type:</strong> {{ loan.loanTypeId }}</p>
+  <p><strong>Amount:</strong> {{ loan.loanAmount }}</p>
+  <p><strong>Status:</strong> {{ loan.status }}</p>
+  <p><strong>Remarks:</strong> {{ loan.remarks }}</p>
+
+  <div class="actions">
+    <a [routerLink]="['/edit-loan', loan.applicationId]">Edit Loan</a> |
+    <button (click)="cancelLoan()">Cancel Loan</button>
+  </div>
+
+  <hr />
+
+
+  <h3>Documents</h3>
+
+  <!-- Upload Form -->
+  <div class="doc-upload">
+    <input type="file" (change)="onFileSelected($event)" />
+<input type="text" [(ngModel)]="docType" placeholder="Document Type (e.g., ID Proof)" />
+<button (click)="uploadDocument()">Upload</button>
+
+  </div>
+
+  <!-- List of Documents -->
+  <ul *ngIf="documents.length > 0; else noDocs">
+    <li *ngFor="let doc of documents">
+      {{ doc.documentType }} - {{ doc.fileName }}
+      <button (click)="downloadDocument(doc.documentId)">Download</button>
+      <button (click)="deleteDocument(doc.documentId)">Delete</button>
+    </li>
+  </ul>
+
+  <ng-template #noDocs>
+    <p>No documents uploaded yet.</p>
+  </ng-template>
+</div>
+
+<p *ngIf="error" class="error">{{ error }}</p>

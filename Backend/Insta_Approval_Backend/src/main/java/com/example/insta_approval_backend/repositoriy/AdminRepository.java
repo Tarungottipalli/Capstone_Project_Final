@@ -1,0 +1,20 @@
+package com.example.insta_approval_backend.repositoriy;
+
+import java.util.Optional;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
+
+import com.example.insta_approval_backend.model.Admin;
+import com.example.insta_approval_backend.model.User;
+
+@Repository
+public interface AdminRepository extends JpaRepository<Admin, Long> {
+    Optional<Admin> findByEmail(String email);
+
+    boolean existsByEmail(String email);
+    Optional<Admin> findByUser(User user);
+    Optional<Admin> findByUser_UserId(Long userId);
+    
+    
+}
