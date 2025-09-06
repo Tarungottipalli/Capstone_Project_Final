@@ -34,7 +34,7 @@ public class CustomerController {
 
     // Apply for Loan
     @PostMapping("/{customerId}/loans")
-    @PreAuthorize("hasRole('CUSTOMER')") 
+    @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<LoanResponse> applyLoan(
             @PathVariable Long customerId,
             @RequestBody LoanApplicationRequest request) {
@@ -47,11 +47,12 @@ public class CustomerController {
         resp.setLoanAmount(loan.getLoanAmount());
         resp.setApplicationDate(loan.getApplicationDate());
         resp.setStatus(loan.getStatus());
+
         resp.setRemarks(loan.getRemarks());
 
         return ResponseEntity.ok(resp);
     }
-    
+
     @GetMapping("/{customerId}")
     @PreAuthorize("hasRole('CUSTOMER')")
     public ResponseEntity<CustomerResponse> getCustomerById(@PathVariable Long customerId) {
@@ -70,14 +71,13 @@ public class CustomerController {
             resp.setApplicationDate(loan.getApplicationDate());
             resp.setStatus(loan.getStatus());
             resp.setRemarks(loan.getRemarks());
+
             return resp;
         }).collect(Collectors.toList());
 
         return ResponseEntity.ok(loans);
     }
 
-  
-    
     @GetMapping("/loans/{loanId}")
     @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
     public ResponseEntity<LoanResponse> getLoanStatus(@PathVariable Long loanId) {
@@ -85,17 +85,15 @@ public class CustomerController {
         return ResponseEntity.ok(mapToLoanResponse(loan));
     }
 
-  
     @PutMapping("/loans/{loanId}")
     @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
     public ResponseEntity<LoanResponse> updateLoan(
             @PathVariable Long loanId,
             @RequestBody LoanApplicationRequest request) {
-        
+
         LoanApplication loan = loanService.updateLoan(loanId, request);
         return ResponseEntity.ok(mapToLoanResponse(loan));
     }
-
 
     @DeleteMapping("/loans/{loanId}")
     @PreAuthorize("hasRole('CUSTOMER') and @loanService.isUsersLoan(#loanId)")
@@ -103,21 +101,20 @@ public class CustomerController {
         loanService.cancelLoan(loanId);
         return ResponseEntity.ok("Loan application cancelled successfully");
     }
-    
+
     @DeleteMapping("/{customerId}")
     public String deleteById(Long customerId) {
-    	loanService.deleteById(customerId);
-    	return "Deleted Sucessfully";
+        loanService.deleteById(customerId);
+        return "Deleted Sucessfully";
     }
 
-   
     private LoanResponse mapToLoanResponse(LoanApplication loan) {
         LoanResponse resp = new LoanResponse();
         resp.setApplicationId(loan.getApplicationId());
         resp.setCustomerId(loan.getCustomer().getCustomerId());
         resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
         resp.setLoanAmount(loan.getLoanAmount());
-        resp.setLoanTypeName(loan.getLoanType().getTypeName()); 
+        resp.setLoanTypeName(loan.getLoanType().getTypeName());
         resp.setApplicationDate(loan.getApplicationDate());
         resp.setStatus(loan.getStatus());
         resp.setRemarks(loan.getRemarks());

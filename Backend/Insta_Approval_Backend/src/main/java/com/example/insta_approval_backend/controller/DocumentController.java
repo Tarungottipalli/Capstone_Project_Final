@@ -35,6 +35,7 @@ import com.example.insta_approval_backend.service.DocumentService;
 public class DocumentController {
 
     private final DocumentService documentService;
+
     public DocumentController(DocumentService documentService) {
         this.documentService = documentService;
     }
@@ -44,11 +45,10 @@ public class DocumentController {
     public ResponseEntity<DocumentUploadResponse> uploadDocument(
             @PathVariable Long loanId,
             @RequestParam("file") MultipartFile file,
-    		@RequestParam("documentType") String documentType,
-    		@AuthenticationPrincipal User user)
-    {
+            @RequestParam("documentType") String documentType,
+            @AuthenticationPrincipal User user) {
 
-    	 Document doc = documentService.uploadDocument(loanId, file, documentType);
+        Document doc = documentService.uploadDocument(loanId, file, documentType);
 
         DocumentUploadResponse resp = new DocumentUploadResponse();
         resp.setDocumentId(doc.getDocumentId());
@@ -67,17 +67,16 @@ public class DocumentController {
         return ResponseEntity.ok()
                 .contentType(MediaType.parseMediaType(doc.getFileType()))
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + doc.getFileName() + "\"")
-                .body(doc.getFileData());   // ✅ return from DB
+                .body(doc.getFileData()); // ✅ return from DB
     }
 
-   
     // Delete
     @DeleteMapping("/{docId}")
     public ResponseEntity<String> deleteDocument(@PathVariable Long docId) {
         documentService.deleteDocument(docId);
         return ResponseEntity.ok("Document deleted successfully");
     }
-    
+
     @GetMapping("/loan/{loanId}")
     public ResponseEntity<List<DocumentUploadResponse>> getDocumentsByLoan(@PathVariable Long loanId) {
         try {
@@ -87,6 +86,7 @@ public class DocumentController {
                 DocumentUploadResponse resp = new DocumentUploadResponse();
                 resp.setDocumentId(doc.getDocumentId());
                 resp.setFileName(doc.getFileName());
+
                 resp.setFileType(doc.getFileType());
                 resp.setDocumentType(doc.getDocumentType());
                 if (doc.getLoanApplication() != null) {
@@ -102,5 +102,5 @@ public class DocumentController {
             return ResponseEntity.internalServerError().build();
         }
     }
-  
+
 }

@@ -1,18 +1,18 @@
-/* General reset */
+
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Landing container split */
+
 .landing-container {
   display: flex;
   height: 100vh;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Left side with gradient */
+
 .left-section {
   flex: 1;
   display: flex;
@@ -34,7 +34,7 @@
   opacity: 0.9;
 }
 
-/* Right side with glass card */
+
 .right-section {
   flex: 1;
   display: flex;
@@ -51,7 +51,7 @@
   background: rgba(0, 0, 0, 0.55);
 }
 
-/* Glassmorphism card */
+
 .content {
   position: relative;
   z-index: 1;
@@ -80,14 +80,14 @@
   margin-bottom: 30px;
 }
 
-/* Buttons container */
+
 .buttons {
   display: flex;
   justify-content: center;
   gap: 20px;
 }
 
-/* Modern buttons */
+
 .btn {
   padding: 12px 28px;
   border-radius: 50px;
@@ -97,7 +97,7 @@
   transition: all 0.3s ease;
 }
 
-/* Login button */
+
 .login-btn {
   background: linear-gradient(135deg, #007bff, #0056d2);
   color: #fff;
@@ -110,7 +110,7 @@
   box-shadow: 0 6px 18px rgba(0, 123, 255, 0.6);
 }
 
-/* Register button */
+
 .register-btn {
   background: linear-gradient(135deg, #28a745, #1e7e34);
   color: #fff;
@@ -123,13 +123,13 @@
   box-shadow: 0 6px 18px rgba(40, 167, 69, 0.6);
 }
 
-/* Fade-in animation */
+
 @keyframes fadeIn {
   from { opacity: 0; transform: translateY(20px); }
   to { opacity: 1; transform: translateY(0); }
 }
 
-/* Responsive */
+
 @media (max-width: 900px) {
   .landing-container {
     flex-direction: column;

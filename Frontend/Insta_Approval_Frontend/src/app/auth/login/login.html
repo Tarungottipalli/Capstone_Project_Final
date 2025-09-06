@@ -1,10 +1,8 @@
 <div class="login-container">
   <h2>Login</h2>
 
-  <!-- Error message -->
   <p *ngIf="error" class="error">{{ error }}</p>
 
-  <!-- Login form -->
   <form (ngSubmit)="login()">
     <label for="email">Email</label>
     <input id="email" type="email" [(ngModel)]="email" name="email" required />
@@ -15,6 +13,5 @@
     <button type="submit">Login</button>
   </form>
 
-  <!-- Navigation -->
   <p>Don’t have an account? <a routerLink="/register">Register</a></p>
 </div>

@@ -1,4 +1,4 @@
-/* Container */
+
 div[ngif="loanRequest"] {
   width: 400px;
   margin: 40px auto;
@@ -10,14 +10,14 @@ div[ngif="loanRequest"] {
   font-family: Arial, sans-serif;
 }
 
-/* Heading */
+
 div[ngif="loanRequest"] h2 {
   text-align: center;
   margin-bottom: 20px;
   color: #333;
 }
 
-/* Labels */
+
 div[ngif="loanRequest"] label {
   display: block;
   margin-bottom: 6px;
@@ -25,7 +25,6 @@ div[ngif="loanRequest"] label {
   color: #444;
 }
 
-/* Inputs & Textarea */
 div[ngif="loanRequest"] input,
 div[ngif="loanRequest"] textarea {
   width: 100%;
@@ -37,7 +36,7 @@ div[ngif="loanRequest"] textarea {
   transition: border 0.3s ease;
 }
 
-/* Placeholder styling (in case you add later) */
+
 div[ngif="loanRequest"] input::placeholder,
 div[ngif="loanRequest"] textarea::placeholder {
   color: #888;
@@ -45,21 +44,21 @@ div[ngif="loanRequest"] textarea::placeholder {
   font-style: italic;
 }
 
-/* Focus effect */
+
 div[ngif="loanRequest"] input:focus,
 div[ngif="loanRequest"] textarea:focus {
   border-color: #007bff;
   outline: none;
 }
 
-/* Readonly field styling */
+
 div[ngif="loanRequest"] input[readonly] {
   background: #f5f5f5;
   color: #666;
   cursor: not-allowed;
 }
 
-/* Buttons */
+
 div[ngif="loanRequest"] button {
   padding: 10px 16px;
   border: none;
@@ -71,7 +70,7 @@ div[ngif="loanRequest"] button {
   margin-right: 10px;
 }
 
-/* Update button (green) */
+
 div[ngif="loanRequest"] button[type="submit"] {
   background: #28a745;
   color: white;
@@ -81,7 +80,7 @@ div[ngif="loanRequest"] button[type="submit"]:hover {
   background: #218838;
 }
 
-/* Cancel button (red) */
+
 div[ngif="loanRequest"] button[type="button"] {
   background: #dc3545;
   color: white;
@@ -91,7 +90,7 @@ div[ngif="loanRequest"] button[type="button"]:hover {
   background: #a71d2a;
 }
 
-/* Error message */
+
 .error {
   color: red;
   text-align: center;

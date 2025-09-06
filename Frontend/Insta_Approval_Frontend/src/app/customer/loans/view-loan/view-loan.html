@@ -13,18 +13,14 @@
 
   <hr />
 
-
   <h3>Documents</h3>
 
-  <!-- Upload Form -->
   <div class="doc-upload">
     <input type="file" (change)="onFileSelected($event)" />
-<input type="text" [(ngModel)]="docType" placeholder="Document Type (e.g., ID Proof)" />
-<button (click)="uploadDocument()">Upload</button>
-
+    <input type="text" [(ngModel)]="docType" placeholder="Document Type (e.g., ID Proof)" />
+    <button (click)="uploadDocument()">Upload</button>
   </div>
 
-  <!-- List of Documents -->
   <ul *ngIf="documents.length > 0; else noDocs">
     <li *ngFor="let doc of documents">
       {{ doc.documentType }} - {{ doc.fileName }}

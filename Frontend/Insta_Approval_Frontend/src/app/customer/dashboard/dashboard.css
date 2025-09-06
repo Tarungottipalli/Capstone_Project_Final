@@ -1,4 +1,4 @@
-/* Dashboard Container */
+
 .dashboard-container {
   max-width: 1100px;
   margin: 40px auto;
@@ -6,7 +6,7 @@
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
-/* Header with logout */
+
 .dashboard-header {
   display: flex;
   justify-content: space-between;
@@ -36,7 +36,7 @@
   box-shadow: 0px 4px 12px rgba(255, 65, 108, 0.4);
 }
 
-/* Profile card */
+
 .profile-card {
   background: #fff;
   padding: 20px;
@@ -57,7 +57,7 @@
   color: #444;
 }
 
-/* Loan Actions */
+
 .loan-actions {
   margin: 20px 0;
   text-align: center;
@@ -79,7 +79,6 @@
   transform: translateY(-2px);
 }
 
-/* Loan Table */
 .loan-table {
   width: 100%;
   border-collapse: collapse;
@@ -113,7 +112,7 @@
   transition: background 0.3s;
 }
 
-/* Status badges */
+
 .status-badge {
   padding: 6px 12px;
   border-radius: 20px;
@@ -125,7 +124,7 @@
 .status-badge.pending { background: #ffc107; color: #333; }
 .status-badge.rejected { background: #dc3545; }
 
-/* Action buttons */
+
 .actions {
   display: flex;
   gap: 8px;
@@ -166,7 +165,7 @@
   background: #a71d2a;
 }
 
-/* Error message */
+
 .error {
   color: #721c24;
   background: #f8d7da;
@@ -178,7 +177,6 @@
   text-align: center;
 }
 
-/* No data text */
 .no-data {
   text-align: center;
   font-size: 14px;

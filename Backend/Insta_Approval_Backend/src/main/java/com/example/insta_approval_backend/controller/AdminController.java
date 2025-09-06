@@ -21,11 +21,12 @@ import com.example.insta_approval_backend.service.AdminService;
 
 @RestController
 @RequestMapping("/api/v1/admin")
-@PreAuthorize("hasRole('ADMIN')") 
+@PreAuthorize("hasRole('ADMIN')")
 @CrossOrigin("*")
 public class AdminController {
 
     private final AdminService adminService;
+
     public AdminController(AdminService adminService) {
         this.adminService = adminService;
     }
@@ -43,11 +44,13 @@ public class AdminController {
         resp.setCustomerId(loan.getCustomer().getCustomerId());
         resp.setLoanTypeId(loan.getLoanType().getLoanTypeId());
         resp.setLoanAmount(loan.getLoanAmount());
+
         resp.setApplicationDate(loan.getApplicationDate());
         resp.setStatus(loan.getStatus());
         resp.setRemarks(loan.getRemarks());
 
-        return ResponseEntity.ok(resp);
+     
+
     }
     @GetMapping("/loans/pending")
     public ResponseEntity<List<AdminLoanResponse>> getPendingLoans() {
@@ -57,47 +60,46 @@ public class AdminController {
             AdminLoanResponse resp = new AdminLoanResponse();
             resp.setApplicationId(loan.getApplicationId());
 
-            // Customer details
+            
             AdminLoanResponse.CustomerSummary cust = new AdminLoanResponse.CustomerSummary();
             cust.setCustomerId(loan.getCustomer().getCustomerId());
             cust.setName(loan.getCustomer().getName());
+
             resp.setCustomer(cust);
 
-            // LoanType details
-            AdminLoanResponse.LoanTypeSummary type = new AdminLoanResponse.LoanTypeSummary();
+            
+            Ad minLoanResponse.LoanTypeSummary type = new AdminLoanResponse.LoanTypeSummary();
             type.setLoanTypeId(loan.getLoanType().getLoanTypeId());
-            //type.setName(loan.getLoanType().getName());
+            
             resp.setLoanType(type);
 
             resp.setLoanAmount(loan.getLoanAmount());
             resp.setApplicationDate(loan.getApplicationDate());
             resp.setStatus(loan.getStatus().name());
+
             resp.setRemarks(loan.getRemarks());
 
             return resp;
-        }).toList();
+     
 
-        return ResponseEntity.ok(responses);
     }
 
     
     @PutMapping("/loans/approve/{loanId}")
-    public ResponseEntity<LoanResponse> approveLoan(
+
             @PathVariable Long loanId,
             @RequestBody(required = false) String remarks) {
-        
-        LoanApplication loan = adminService.approveLoan(loanId, remarks);
-        return ResponseEntity.ok(mapToLoanResponse(loan));
+     
+
     }
 
    
     @PutMapping("/loans/reject/{loanId}")
-    public ResponseEntity<LoanResponse> rejectLoan(
+
             @PathVariable Long loanId,
             @RequestBody String remarks) {
-        
-        LoanApplication loan = adminService.rejectLoan(loanId, remarks);
-        return ResponseEntity.ok(mapToLoanResponse(loan));
+     
+
     }
     
     

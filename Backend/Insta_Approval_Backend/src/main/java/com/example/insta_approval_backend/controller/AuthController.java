@@ -19,6 +19,7 @@ import com.example.insta_approval_backend.service.AuthService;
 public class AuthController {
 
     private final AuthService authService;
+
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
@@ -26,12 +27,14 @@ public class AuthController {
     // Register Customer
     @PostMapping("/register")
     public ResponseEntity<CustomerResponse> register(@RequestBody RegisterCustomerRequest request) {
+
         return ResponseEntity.ok(authService.registerCustomer(request));
     }
 
     // Login
     @PostMapping("/login")
     public ResponseEntity<LoginResponse> login(@RequestBody LoginRequest request) {
+
         return ResponseEntity.ok(authService.login(request));
     }
 }
